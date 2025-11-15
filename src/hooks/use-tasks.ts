@@ -57,13 +57,14 @@ export function useCreateTask() {
       ]);
 
       // Optimistically update cache
-      const optimisticTask = {
+      const optimisticTask: TaskWithProject = {
         id: `temp-${Date.now()}`,
         ...newTask,
+        userId: '',
         createdAt: new Date(),
         updatedAt: new Date(),
         project: { id: newTask.projectId, title: '', status: '' },
-      };
+      } as TaskWithProject;
 
       queryClient.setQueryData(['tasks'], (old: TaskWithProject[] | undefined) => {
         return old ? [...old, optimisticTask] : [optimisticTask];
@@ -78,7 +79,7 @@ export function useCreateTask() {
 
       return { previousTasks, previousProjectTasks };
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, variables, context?: { previousTasks?: TaskWithProject[]; previousProjectTasks?: TaskWithProject[] }) => {
       // Rollback on error
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);
@@ -204,7 +205,7 @@ export function useDeleteTask() {
 
       return { previousTasks };
     },
-    onError: (error: Error, _id, context) => {
+    onError: (error: Error, _id, context?: { previousTasks?: TaskWithProject[] }) => {
       // Rollback on error
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);

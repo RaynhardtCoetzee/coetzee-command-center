@@ -85,7 +85,7 @@ export function useCreateProject() {
 
       return { previousProjects };
     },
-    onError: (error: Error, _newProject, context) => {
+    onError: (error: Error, _newProject, context?: { previousProjects?: ProjectWithRelations[] }) => {
       // Rollback on error
       if (context?.previousProjects) {
         queryClient.setQueryData(['projects'], context.previousProjects);
@@ -139,7 +139,7 @@ export function useUpdateProject() {
 
       return { previousProjects, previousProject };
     },
-    onError: (error: Error, variables, context) => {
+    onError: (error: Error, variables, context?: { previousProjects?: ProjectWithRelations[]; previousProject?: ProjectWithRelations }) => {
       // Rollback on error
       if (context?.previousProjects) {
         queryClient.setQueryData(['projects'], context.previousProjects);
@@ -187,7 +187,7 @@ export function useDeleteProject() {
 
       return { previousProjects };
     },
-    onError: (error: Error, _id, context) => {
+    onError: (error: Error, _id, context?: { previousProjects?: ProjectWithRelations[] }) => {
       // Rollback on error
       if (context?.previousProjects) {
         queryClient.setQueryData(['projects'], context.previousProjects);
