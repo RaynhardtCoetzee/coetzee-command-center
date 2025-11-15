@@ -10,6 +10,9 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'im
 /**
  * POST /api/upload/screenshot
  * Upload a screenshot image file
+ * 
+ * NOTE: On Vercel (serverless), filesystem writes are ephemeral.
+ * For production, consider using Vercel Blob Storage or another cloud storage solution.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -39,25 +42,38 @@ export async function POST(request: NextRequest) {
       return errorResponse(`File size too large. Maximum size: ${MAX_FILE_SIZE / 1024 / 1024}MB`, 400);
     }
 
-    // 5. Create uploads directory if it doesn't exist
+    // 5. Check if we're in production (Vercel)
+    const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+    
+    if (isProduction) {
+      // On Vercel, filesystem is read-only. Files need to be stored in cloud storage.
+      // For now, return an error with a helpful message.
+      // TODO: Implement Vercel Blob Storage or another cloud storage solution
+      return errorResponse(
+        'File uploads are not supported in production yet. Please use cloud storage (e.g., Vercel Blob, Cloudinary, or S3).',
+        501
+      );
+    }
+
+    // 6. Development: Create uploads directory if it doesn't exist
     const uploadsDir = join(process.cwd(), 'public', 'uploads', 'screenshots');
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true });
     }
 
-    // 6. Generate unique filename
+    // 7. Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileExtension = file.name.split('.').pop();
     const filename = `${session.user.id}-${timestamp}-${randomString}.${fileExtension}`;
     const filepath = join(uploadsDir, filename);
 
-    // 7. Convert file to buffer and save
+    // 8. Convert file to buffer and save
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     await writeFile(filepath, buffer);
 
-    // 8. Return file URL
+    // 9. Return file URL
     const fileUrl = `/uploads/screenshots/${filename}`;
     return successResponse({ url: fileUrl, filename });
   } catch (error) {
