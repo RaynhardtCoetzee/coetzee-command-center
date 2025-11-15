@@ -66,6 +66,11 @@ export interface SearchResults {
   projects: Project[];
   clients: Client[];
   components: Component[];
-  docs: any[];
+  docs: Array<{
+    id: string;
+    title: string;
+    content?: string;
+    [key: string]: unknown;
+  }>;
 }
 
