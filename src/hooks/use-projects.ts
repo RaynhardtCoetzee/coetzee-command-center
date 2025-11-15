@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsApi } from '@/lib/api-client';
 import { toast } from '@/hooks/use-toast';
+import type { ProjectWithRelations } from '@/types';
 
 type ProjectFilters = {
   status?: 'planning' | 'active' | 'review' | 'completed' | 'archived';
@@ -68,16 +69,17 @@ export function useCreateProject() {
       const previousProjects = queryClient.getQueryData(['projects']);
 
       // Optimistically update cache
-      queryClient.setQueryData(['projects'], (old: any[]) => {
-        const optimisticProject = {
+      queryClient.setQueryData(['projects'], (old: ProjectWithRelations[] | undefined) => {
+        const optimisticProject: ProjectWithRelations = {
           id: `temp-${Date.now()}`,
           ...newProject,
           createdAt: new Date(),
           updatedAt: new Date(),
+          userId: '',
           client: null,
           tasks: [],
           _count: { tasks: 0 },
-        };
+        } as ProjectWithRelations;
         return old ? [optimisticProject, ...old] : [optimisticProject];
       });
 
@@ -123,14 +125,14 @@ export function useUpdateProject() {
       const previousProject = queryClient.getQueryData(['projects', id]);
 
       // Optimistically update cache
-      queryClient.setQueryData(['projects'], (old: any[]) => {
+      queryClient.setQueryData(['projects'], (old: ProjectWithRelations[] | undefined) => {
         if (!old) return old;
         return old.map((project) =>
           project.id === id ? { ...project, ...data, updatedAt: new Date() } : project
         );
       });
 
-      queryClient.setQueryData(['projects', id], (old: any) => {
+      queryClient.setQueryData(['projects', id], (old: ProjectWithRelations | undefined) => {
         if (!old) return old;
         return { ...old, ...data, updatedAt: new Date() };
       });
@@ -178,7 +180,7 @@ export function useDeleteProject() {
       const previousProjects = queryClient.getQueryData(['projects']);
 
       // Optimistically update cache
-      queryClient.setQueryData(['projects'], (old: any[]) => {
+      queryClient.setQueryData(['projects'], (old: ProjectWithRelations[] | undefined) => {
         if (!old) return old;
         return old.filter((project) => project.id !== id);
       });

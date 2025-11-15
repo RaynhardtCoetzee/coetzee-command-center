@@ -65,13 +65,13 @@ export function useCreateTask() {
         project: { id: newTask.projectId, title: '', status: '' },
       };
 
-      queryClient.setQueryData(['tasks'], (old: any[]) => {
+      queryClient.setQueryData(['tasks'], (old: TaskWithProject[] | undefined) => {
         return old ? [...old, optimisticTask] : [optimisticTask];
       });
 
       queryClient.setQueryData(
         ['tasks', { projectId: newTask.projectId }],
-        (old: any[]) => {
+        (old: TaskWithProject[] | undefined) => {
           return old ? [...old, optimisticTask] : [optimisticTask];
         }
       );
@@ -116,15 +116,15 @@ export function useUpdateTask() {
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
 
       // Snapshot previous values
-      const previousTasks = queryClient.getQueryData(['tasks']);
+      const previousTasks = queryClient.getQueryData<TaskWithProject[]>(['tasks']);
       
       // Find the task to get its projectId
-      const tasksArray = (previousTasks as any[]) || [];
+      const tasksArray = previousTasks || [];
       const taskToUpdate = tasksArray.find((t) => t.id === id);
       const projectId = taskToUpdate?.projectId;
 
       // Optimistically update cache for all tasks
-      queryClient.setQueryData(['tasks'], (old: any[]) => {
+      queryClient.setQueryData(['tasks'], (old: TaskWithProject[] | undefined) => {
         if (!old) return old;
         return old.map((task) =>
           task.id === id ? { ...task, ...data, updatedAt: new Date() } : task
@@ -133,14 +133,14 @@ export function useUpdateTask() {
 
       // Also update project-specific query if we have projectId
       if (projectId) {
-        const previousProjectTasks = queryClient.getQueryData([
+        const previousProjectTasks = queryClient.getQueryData<TaskWithProject[]>([
           'tasks',
           { projectId },
         ]);
         
         queryClient.setQueryData(
           ['tasks', { projectId }],
-          (old: any[]) => {
+          (old: TaskWithProject[] | undefined) => {
             if (!old) return old;
             return old.map((task) =>
               task.id === id ? { ...task, ...data, updatedAt: new Date() } : task
@@ -153,7 +153,7 @@ export function useUpdateTask() {
 
       return { previousTasks };
     },
-    onError: (error: Error, variables, context: any) => {
+    onError: (error: Error, variables, context?: { previousTasks?: TaskWithProject[]; previousProjectTasks?: TaskWithProject[]; projectId?: string }) => {
       // Rollback on error
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);
@@ -197,7 +197,7 @@ export function useDeleteTask() {
       const previousTasks = queryClient.getQueryData(['tasks']);
 
       // Optimistically update cache
-      queryClient.setQueryData(['tasks'], (old: any[]) => {
+      queryClient.setQueryData(['tasks'], (old: TaskWithProject[] | undefined) => {
         if (!old) return old;
         return old.filter((task) => task.id !== id);
       });
