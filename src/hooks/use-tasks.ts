@@ -42,16 +42,21 @@ export function useTasks(filters?: TaskFilters) {
 export function useCreateTask() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (data: CreateTaskData) => tasksApi.create(data),
+  return useMutation<
+    TaskWithProject,
+    Error,
+    CreateTaskData,
+    { previousTasks?: TaskWithProject[]; previousProjectTasks?: TaskWithProject[] }
+  >({
+    mutationFn: (data: CreateTaskData) => tasksApi.create(data) as Promise<TaskWithProject>,
     onMutate: async (newTask) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
       await queryClient.cancelQueries({ queryKey: ['tasks', { projectId: newTask.projectId }] });
 
       // Snapshot previous values
-      const previousTasks = queryClient.getQueryData(['tasks']);
-      const previousProjectTasks = queryClient.getQueryData([
+      const previousTasks = queryClient.getQueryData<TaskWithProject[]>(['tasks']);
+      const previousProjectTasks = queryClient.getQueryData<TaskWithProject[]>([
         'tasks',
         { projectId: newTask.projectId },
       ]);
@@ -77,7 +82,7 @@ export function useCreateTask() {
         }
       );
 
-      return { previousTasks, previousProjectTasks };
+      return { previousTasks: previousTasks ?? undefined, previousProjectTasks: previousProjectTasks ?? undefined };
     },
     onError: (error: Error, variables, context?: { previousTasks?: TaskWithProject[]; previousProjectTasks?: TaskWithProject[] }) => {
       // Rollback on error
@@ -110,7 +115,12 @@ export function useCreateTask() {
 export function useUpdateTask() {
   const queryClient = useQueryClient();
 
-  return useMutation<TaskWithProject, Error, { id: string; data: UpdateTaskData }>({
+  return useMutation<
+    TaskWithProject,
+    Error,
+    { id: string; data: UpdateTaskData },
+    { previousTasks?: TaskWithProject[]; previousProjectTasks?: TaskWithProject[]; projectId?: string }
+  >({
     mutationFn: ({ id, data }) => tasksApi.update(id, data) as Promise<TaskWithProject>,
     onMutate: async ({ id, data }) => {
       // Cancel outgoing refetches
@@ -149,12 +159,12 @@ export function useUpdateTask() {
           }
         );
 
-        return { previousTasks, previousProjectTasks, projectId };
+        return { previousTasks: previousTasks ?? undefined, previousProjectTasks: previousProjectTasks ?? undefined, projectId };
       }
 
-      return { previousTasks };
+      return { previousTasks: previousTasks ?? undefined };
     },
-    onError: (error: Error, variables, context?: { previousTasks?: TaskWithProject[]; previousProjectTasks?: TaskWithProject[]; projectId?: string }) => {
+    onError: (error: Error, variables, context) => {
       // Rollback on error
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);
@@ -188,14 +198,19 @@ export function useUpdateTask() {
 export function useDeleteTask() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) => tasksApi.delete(id),
+  return useMutation<
+    void,
+    Error,
+    string,
+    { previousTasks?: TaskWithProject[] }
+  >({
+    mutationFn: (id: string) => tasksApi.delete(id) as Promise<void>,
     onMutate: async (id) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
 
       // Snapshot previous value
-      const previousTasks = queryClient.getQueryData(['tasks']);
+      const previousTasks = queryClient.getQueryData<TaskWithProject[]>(['tasks']);
 
       // Optimistically update cache
       queryClient.setQueryData(['tasks'], (old: TaskWithProject[] | undefined) => {
@@ -203,7 +218,7 @@ export function useDeleteTask() {
         return old.filter((task) => task.id !== id);
       });
 
-      return { previousTasks };
+      return { previousTasks: previousTasks ?? undefined };
     },
     onError: (error: Error, _id, context?: { previousTasks?: TaskWithProject[] }) => {
       // Rollback on error

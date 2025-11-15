@@ -59,23 +59,40 @@ export function useProject(id: string | undefined) {
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (data: CreateProjectData) => projectsApi.create(data),
+  return useMutation<
+    ProjectWithRelations,
+    Error,
+    CreateProjectData,
+    { previousProjects?: ProjectWithRelations[] }
+  >({
+    mutationFn: (data: CreateProjectData) => projectsApi.create(data) as Promise<ProjectWithRelations>,
     onMutate: async (newProject) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['projects'] });
 
       // Snapshot previous value
-      const previousProjects = queryClient.getQueryData(['projects']);
+      const previousProjects = queryClient.getQueryData<ProjectWithRelations[]>(['projects']);
 
       // Optimistically update cache
       queryClient.setQueryData(['projects'], (old: ProjectWithRelations[] | undefined) => {
-        const optimisticProject: ProjectWithRelations = {
+        const optimisticProject = {
           id: `temp-${Date.now()}`,
-          ...newProject,
+          title: newProject.title,
+          description: newProject.description ?? null,
+          roadmap: newProject.roadmap ?? null,
+          buildPlan: newProject.buildPlan ?? null,
+          screenshots: newProject.screenshots ? JSON.stringify(newProject.screenshots) : null,
+          techStack: newProject.techStack ? JSON.stringify(newProject.techStack) : null,
+          status: newProject.status ?? 'planning',
+          priority: newProject.priority ?? 'medium',
+          progress: newProject.progress ?? 0,
+          startDate: newProject.startDate ? (typeof newProject.startDate === 'string' ? new Date(newProject.startDate) : newProject.startDate) : null,
+          dueDate: newProject.dueDate ? (typeof newProject.dueDate === 'string' ? new Date(newProject.dueDate) : newProject.dueDate) : null,
+          budget: newProject.budget ?? null,
+          clientId: newProject.clientId ?? null,
+          userId: '',
           createdAt: new Date(),
           updatedAt: new Date(),
-          userId: '',
           client: null,
           tasks: [],
           _count: { tasks: 0 },
@@ -83,7 +100,7 @@ export function useCreateProject() {
         return old ? [optimisticProject, ...old] : [optimisticProject];
       });
 
-      return { previousProjects };
+      return { previousProjects: previousProjects ?? undefined };
     },
     onError: (error: Error, _newProject, context?: { previousProjects?: ProjectWithRelations[] }) => {
       // Rollback on error
@@ -112,17 +129,22 @@ export function useCreateProject() {
 export function useUpdateProject() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<
+    ProjectWithRelations,
+    Error,
+    { id: string; data: UpdateProjectData },
+    { previousProjects?: ProjectWithRelations[]; previousProject?: ProjectWithRelations }
+  >({
     mutationFn: ({ id, data }: { id: string; data: UpdateProjectData }) =>
-      projectsApi.update(id, data),
+      projectsApi.update(id, data) as Promise<ProjectWithRelations>,
     onMutate: async ({ id, data }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['projects'] });
       await queryClient.cancelQueries({ queryKey: ['projects', id] });
 
       // Snapshot previous values
-      const previousProjects = queryClient.getQueryData(['projects']);
-      const previousProject = queryClient.getQueryData(['projects', id]);
+      const previousProjects = queryClient.getQueryData<ProjectWithRelations[]>(['projects']);
+      const previousProject = queryClient.getQueryData<ProjectWithRelations>(['projects', id]);
 
       // Optimistically update cache
       queryClient.setQueryData(['projects'], (old: ProjectWithRelations[] | undefined) => {
@@ -137,7 +159,7 @@ export function useUpdateProject() {
         return { ...old, ...data, updatedAt: new Date() };
       });
 
-      return { previousProjects, previousProject };
+      return { previousProjects: previousProjects ?? undefined, previousProject: previousProject ?? undefined };
     },
     onError: (error: Error, variables, context?: { previousProjects?: ProjectWithRelations[]; previousProject?: ProjectWithRelations }) => {
       // Rollback on error
@@ -170,14 +192,19 @@ export function useUpdateProject() {
 export function useDeleteProject() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) => projectsApi.delete(id),
+  return useMutation<
+    void,
+    Error,
+    string,
+    { previousProjects?: ProjectWithRelations[] }
+  >({
+    mutationFn: (id: string) => projectsApi.delete(id) as Promise<void>,
     onMutate: async (id) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['projects'] });
 
       // Snapshot previous value
-      const previousProjects = queryClient.getQueryData(['projects']);
+      const previousProjects = queryClient.getQueryData<ProjectWithRelations[]>(['projects']);
 
       // Optimistically update cache
       queryClient.setQueryData(['projects'], (old: ProjectWithRelations[] | undefined) => {
@@ -185,7 +212,7 @@ export function useDeleteProject() {
         return old.filter((project) => project.id !== id);
       });
 
-      return { previousProjects };
+      return { previousProjects: previousProjects ?? undefined };
     },
     onError: (error: Error, _id, context?: { previousProjects?: ProjectWithRelations[] }) => {
       // Rollback on error
