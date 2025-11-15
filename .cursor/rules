@@ -1,0 +1,134 @@
+# Coetzee Command Center - Development Rules
+
+## Project Overview
+You are building a unified business operations platform combining project management, client tracking, component documentation, and code playground features.
+
+## Core Technologies
+- Framework: Next.js 14+ (App Router)
+- Language: TypeScript (strict mode)
+- Styling: Tailwind CSS + shadcn/ui
+- Database: PostgreSQL + Prisma ORM
+- Auth: NextAuth.js v4.24.13 (stable)
+- State: TanStack Query + Zustand
+
+## Critical Rules
+
+### Code Quality
+- Use TypeScript strictly - no `any` types
+- All components must be typed
+- Prefer composition over inheritance
+- Keep files under 300 lines
+- Use functional components with hooks only
+- Extract complex logic into custom hooks
+
+### Naming Conventions
+- Files: kebab-case (project-card.tsx)
+- Components: PascalCase (ProjectCard)
+- Functions: camelCase (handleSubmit)
+- Constants: UPPER_SNAKE_CASE
+- Database: snake_case
+
+### File Organization
+- Group related components in feature folders
+- Co-locate hooks with components
+- Keep types in separate files when shared
+- Use barrel exports for cleaner imports
+
+### Performance
+- Use dynamic imports for heavy components
+- Implement proper loading states
+- Optimize images with next/image
+- Prefer server components
+
+### Security
+- Never expose sensitive data in client
+- Validate all inputs with Zod
+- Use parameterized queries only
+- Rate limit API routes
+
+### Accessibility
+- Keyboard accessible
+- Semantic HTML
+- ARIA labels where needed
+- WCAG AA compliance
+
+## Documentation Location
+
+**ALL documentation is in the `documentation/` folder:**
+
+- **Design System:** `documentation/design/design-system.md` - Colors, typography, spacing, component patterns
+- **Architecture:** `documentation/architecture/architecture.md` - Folder structure, data flow, patterns
+- **Database:** `documentation/architecture/database-schema.md` - Prisma schema and query examples
+- **API Conventions:** `documentation/architecture/api-conventions.md` - API route standards
+- **Common Tasks:** `documentation/development/common-tasks.md` - Frequently used commands
+- **Roadmap:** `documentation/development/roadmap.md` - Development timeline
+
+**Current Phase:** Phase 1: Foundation (Weeks 1-12)
+See `documentation/development/roadmap.md` for detailed timeline.
+
+## Before Committing
+- [ ] TypeScript compiles
+- [ ] ESLint passes
+- [ ] Works in light/dark mode
+- [ ] Responsive design
+- [ ] Keyboard navigation
+- [ ] Loading/error states handled
+
+## Automatic Documentation
+
+**User Commands for Documentation:**
+- `doc` → End of each day: Update today's progress in `documentation/development/daily-log.md`
+- `📊 week [N]` → End of each week (Friday): Weekly summary, update `documentation/development/roadmap.md`
+- `📝 Decision: [title]` → After major decisions: Log in `documentation/decisions/decisions.md`
+- `✅ [task-name]` → After completing tasks: Mark complete in `documentation/development/roadmap.md`
+
+**IMPORTANT: All documentation files must go in `documentation/` folder with proper subfolders:**
+- `documentation/architecture/` - Architecture, database, API docs
+- `documentation/development/` - Roadmap, daily log, common tasks
+- `documentation/decisions/` - Architectural decisions
+- `documentation/design/` - Design system, component patterns
+- `documentation/guides/` - How-to guides
+
+**Proactive Documentation:**
+- After every feature completion: Update roadmap, mark tasks complete
+- When making architectural decisions: Log in decision log immediately
+- Proactively suggest documentation updates when appropriate
+- Keep decision log current
+- Track progress percentages automatically
+
+After completing any feature, you MUST:
+1. Update roadmap automatically
+2. Mark completed tasks with [x]
+3. Update progress percentages
+4. Log architectural decisions
+
+### 2. **Use Short Prompts**
+
+Instead of long explanations, just say:
+- `"doc"` - Update everything relevant
+- `"✅ project-card"` - Mark that task done
+- `"📝 Decision: using React Query because better devtools"` - Quick decision log
+- `"📊 week 3"` - Weekly review
+
+### 3. **Weekly Habit** (Every Sunday)
+```
+"Weekly review for week [N]:
+Completed: [list what you finished]
+In progress: [what's 50%+ done]
+Decisions: [any major choices]
+Update all documentation"
+
+
+## Documentation System
+See `documentation/guides/documentation-system.md` for automatic documentation rules.
+Follow those rules throughout our conversation.
+
+
+## Special Commands
+
+When I say:
+- "doc" → Update all relevant documentation for what we just did
+- "✅" → Mark last completed task in roadmap
+- "📝" → Add last decision to decision log  
+- "📊" → Weekly review and update
+- "🔍" → Check what documentation needs updating
