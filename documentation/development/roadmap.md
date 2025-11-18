@@ -37,10 +37,21 @@
 - [x] Kanban board view with drag between columns (Day 13) ✅
 - [x] Advanced filters, sorting, polish, and preview images (Day 14) ✅
 
-### Week 5-6: Clients
-- [ ] Client CRUD
-- [ ] Link to projects
-- [ ] Communication history
+### Week 5-6: Clients (In Progress)
+- [ ] Day 1: Complete Client CRUD API (POST, PATCH, DELETE routes)
+- [ ] Day 2: Client CRUD UI components (ClientCard, ClientList, ClientForm)
+- [ ] Day 3: Clients List Page with filters, search, and sorting
+- [ ] Day 4: Client Detail Page with project list
+- [ ] Day 5: Link clients to projects (update project form)
+- [ ] Day 6: Client validation & hooks with optimistic updates
+- [ ] Day 7: Communication history model & API
+- [ ] Day 8: Communication history UI components
+- [ ] Day 9: Add communication entries from client page
+- [ ] Day 10: Client statistics and project count
+- [ ] Day 11: Mobile responsiveness for client pages
+- [ ] Day 12: Client import/export (optional)
+- [ ] Day 13: Polish and error handling
+- [ ] Day 14: Testing and documentation
 
 ### Week 7-8: Components
 - [ ] Component library
@@ -68,6 +79,16 @@
 - [ ] Production ready
 
 ## Current Sprint
+**Week:** 5-6 (In Progress)
+**Goal:** Client management system (backend + frontend)
+**Progress:**
+- Backend API: 20% complete (GET route exists, need POST/PATCH/DELETE)
+- Frontend UI: 0% complete
+- Client-Project Linking: 0% complete
+- Communication History: 0% complete
+**Next Focus:** Week 5-6 Day 1 - Complete Client CRUD API
+
+## Previous Sprint
 **Week:** 3-4 ✅ (Completed)
 **Goal:** Project management system (backend + frontend)
 **Progress:**
