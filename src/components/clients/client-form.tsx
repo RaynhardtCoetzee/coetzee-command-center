@@ -62,7 +62,7 @@ export function ClientForm({ client, open, onOpenChange, onSuccess }: ClientForm
         name: client.name,
         email: client.email || null,
         phone: client.phone || null,
-        status: client.status || 'active',
+        status: (client.status || 'active') as 'active' | 'inactive' | 'archived',
       });
     } else if (open) {
       reset({
