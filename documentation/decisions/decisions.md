@@ -4,7 +4,7 @@ This log tracks significant architectural decisions made during development.
 
 ---
 
-## 2024-11-15: Notebook Preview - Post-MVP Enhancement
+## 2025-11-13: Notebook Preview - Post-MVP Enhancement
 
 **Status:** Deferred to Post-MVP  
 **Priority:** Medium  
@@ -56,7 +56,7 @@ The current notebook preview implementation is functional but needs significant 
 
 ---
 
-## 2024-11-15: Mobile-First Responsive Design Pattern
+## 2025-11-12: Mobile-First Responsive Design Pattern
 
 **Decision:** Implement mobile-first responsive design with hidden desktop sidebar and mobile drawer menu
 
@@ -96,7 +96,7 @@ The current notebook preview implementation is functional but needs significant 
 
 ---
 
-## 2024-11-15: Store screenshots as JSON string in database
+## 2025-11-13: Store screenshots as JSON string in database
 
 **Context:**
 When adding screenshot support to projects, we needed to decide how to store multiple image URLs in the database.
@@ -119,7 +119,7 @@ Screenshots stored as JSON string: `["url1", "url2"]`. Parsed in API routes and 
 
 ---
 
-## 2024-11-15 - Decision: Use optimistic updates for all mutations
+## 2025-11-11 - Decision: Use optimistic updates for all mutations
 
 **Context:**
 When implementing the React Query hooks for projects and tasks, we had to decide whether to use optimistic updates (update UI immediately before server responds) or wait for server confirmation before updating the UI.
@@ -142,7 +142,7 @@ All mutation hooks (`useCreateProject`, `useUpdateProject`, `useDeleteProject`, 
 
 ---
 
-## 2024-11-15: Client-Side Auth Checks for Protected Routes
+## 2025-11-08: Client-Side Auth Checks for Protected Routes
 
 **Decision:** Use client-side authentication checks instead of server-side for dashboard layout
 
@@ -170,7 +170,7 @@ All mutation hooks (`useCreateProject`, `useUpdateProject`, `useDeleteProject`, 
 
 ---
 
-## 2024-11-15: NextAuth.js Version Choice
+## 2025-11-08: NextAuth.js Version Choice
 
 **Decision:** Use NextAuth.js v4.24.13 (stable) instead of v5 beta
 

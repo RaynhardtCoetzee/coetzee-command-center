@@ -4,7 +4,7 @@ This log tracks significant architectural decisions made during development.
 
 ---
 
-## 2024-11-15: NextAuth.js Version Choice
+## 2025-11-08: NextAuth.js Version Choice
 
 **Decision:** Use NextAuth.js v4.24.13 (stable) instead of v5 beta
 
@@ -34,7 +34,7 @@ This log tracks significant architectural decisions made during development.
 
 ---
 
-## 2024-11-15: Client-Side Auth Checks for Protected Routes
+## 2025-11-08: Client-Side Auth Checks for Protected Routes
 
 **Decision:** Use client-side authentication checks instead of server-side for dashboard layout
 
