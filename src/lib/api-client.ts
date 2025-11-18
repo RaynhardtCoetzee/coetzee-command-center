@@ -128,6 +128,62 @@ export const clientsApi = {
     const response = await fetch(`${API_BASE_URL}/clients`);
     return handleResponse<Client[]>(response);
   },
+
+  /**
+   * Fetch single client by ID
+   */
+  async getById(id: string) {
+    const response = await fetch(`${API_BASE_URL}/clients/${id}`);
+    return handleResponse(response);
+  },
+
+  /**
+   * Create a new client
+   */
+  async create(data: {
+    name: string;
+    email?: string | null;
+    phone?: string | null;
+    status?: 'active' | 'inactive' | 'archived';
+  }) {
+    const response = await fetch(`${API_BASE_URL}/clients`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  /**
+   * Update a client
+   */
+  async update(id: string, data: {
+    name?: string;
+    email?: string | null;
+    phone?: string | null;
+    status?: 'active' | 'inactive' | 'archived';
+  }) {
+    const response = await fetch(`${API_BASE_URL}/clients/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  /**
+   * Delete a client
+   */
+  async delete(id: string) {
+    const response = await fetch(`${API_BASE_URL}/clients/${id}`, {
+      method: 'DELETE',
+    });
+    return handleResponse(response);
+  },
 };
 
 // Tasks API
